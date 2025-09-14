@@ -1,5 +1,5 @@
 use evdev::{self, KeyCode, EventSummary};
-use std::{io::ErrorKind, thread};
+use std::io::ErrorKind;
 
 const KEY_COUNT: usize = 0x300;
 
