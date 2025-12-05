@@ -1,19 +1,44 @@
+//! macOS implementation using Core Graphics Event APIs.
+
 use crate::input_handler::KeyCode;
 use core_graphics::event::{CGEventSourceStateID, CGEventType, EventField};
 use core_graphics::event_source::CGEventSource;
 
+/// macOS-specific input handler using CGEventSourceKeyState.
+///
+/// This implementation queries the keyboard state on-demand using the Core Graphics
+/// framework, so it doesn't maintain any internal state that needs updating.
+///
+/// # Permissions
+///
+/// This requires "Input Monitoring" permission on macOS. You may need to grant
+/// this permission in System Preferences → Security & Privacy → Privacy → Input Monitoring.
 pub struct InputHandler;
 
 impl InputHandler {
+    /// Creates a new input handler.
     pub fn new() -> Self {
         InputHandler
     }
 
+    /// Updates the internal key state.
+    ///
+    /// On macOS, this is a no-op since CGEventSourceKeyState queries the current
+    /// state directly each time `is_pressed` is called.
     pub fn update_inputs(&mut self) {
         // macOS uses CGEventSourceKeyState which queries state on demand
         // No explicit update needed
     }
 
+    /// Checks if a specific key is currently pressed.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The key code to check
+    ///
+    /// # Returns
+    ///
+    /// `true` if the key is currently pressed, `false` otherwise.
     pub fn is_pressed(&self, key: KeyCode) -> bool {
         let keycode = Self::to_keycode(key);
         unsafe {

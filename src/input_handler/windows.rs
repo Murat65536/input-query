@@ -1,18 +1,38 @@
+//! Windows implementation using Win32 GetAsyncKeyState API.
+
 use crate::input_handler::KeyCode;
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VIRTUAL_KEY};
 
+/// Windows-specific input handler using GetAsyncKeyState.
+///
+/// This implementation queries the keyboard state on-demand using the Win32 API,
+/// so it doesn't maintain any internal state that needs updating.
 pub struct InputHandler;
 
 impl InputHandler {
+    /// Creates a new input handler.
     pub fn new() -> Self {
         InputHandler
     }
 
+    /// Updates the internal key state.
+    ///
+    /// On Windows, this is a no-op since GetAsyncKeyState queries the current
+    /// state directly each time `is_pressed` is called.
     pub fn update_inputs(&mut self) {
         // Windows uses GetAsyncKeyState which queries state on demand
         // No explicit update needed
     }
 
+    /// Checks if a specific key is currently pressed.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The key code to check
+    ///
+    /// # Returns
+    ///
+    /// `true` if the key is currently pressed, `false` otherwise.
     pub fn is_pressed(&self, key: KeyCode) -> bool {
         let vk = Self::to_virtual_key(key);
         unsafe {

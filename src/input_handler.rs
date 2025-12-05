@@ -1,3 +1,5 @@
+//! Platform-specific input handler implementations and key code definitions.
+
 #[cfg(target_os = "linux")]
 pub mod linux;
 
@@ -16,9 +18,16 @@ pub use windows::InputHandler;
 #[cfg(target_os = "macos")]
 pub use macos::InputHandler;
 
+/// Represents a keyboard key that can be queried.
+///
+/// This enum contains the most commonly used keyboard keys. The key codes are
+/// platform-independent, and the library handles the conversion to platform-specific
+/// key codes internally.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum KeyCode {
+    /// Escape key
     KeyEsc,
+    /// Number row keys
     Key1,
     Key2,
     Key3,
@@ -29,10 +38,15 @@ pub enum KeyCode {
     Key8,
     Key9,
     Key0,
+    /// Minus key (-)
     KeyMinus,
+    /// Equal key (=)
     KeyEqual,
+    /// Backspace key
     KeyBackspace,
+    /// Tab key
     KeyTab,
+    /// Letter keys - First row
     KeyQ,
     KeyW,
     KeyE,
@@ -43,10 +57,15 @@ pub enum KeyCode {
     KeyI,
     KeyO,
     KeyP,
+    /// Left bracket key ([)
     KeyLeftBrace,
+    /// Right bracket key (])
     KeyRightBrace,
+    /// Enter/Return key
     KeyEnter,
+    /// Left Control key
     KeyLeftCtrl,
+    /// Letter keys - Second row
     KeyA,
     KeyS,
     KeyD,
@@ -56,11 +75,17 @@ pub enum KeyCode {
     KeyJ,
     KeyK,
     KeyL,
+    /// Semicolon key (;)
     KeySemicolon,
+    /// Apostrophe/Quote key (')
     KeyApostrophe,
+    /// Grave/Backtick key (`)
     KeyGrave,
+    /// Left Shift key
     KeyLeftShift,
+    /// Backslash key (\)
     KeyBackslash,
+    /// Letter keys - Third row
     KeyZ,
     KeyX,
     KeyC,
@@ -68,14 +93,23 @@ pub enum KeyCode {
     KeyB,
     KeyN,
     KeyM,
+    /// Comma key (,)
     KeyComma,
+    /// Period/Dot key (.)
     KeyDot,
+    /// Slash key (/)
     KeySlash,
+    /// Right Shift key
     KeyRightShift,
+    /// Keypad asterisk key (*)
     KeyKpAsterisk,
+    /// Left Alt/Option key
     KeyLeftAlt,
+    /// Space bar
     KeySpace,
+    /// Caps Lock key
     KeyCapslock,
+    /// Function keys
     KeyF1,
     KeyF2,
     KeyF3,
@@ -88,6 +122,7 @@ pub enum KeyCode {
     KeyF10,
     KeyF11,
     KeyF12,
+    /// Arrow keys
     KeyUp,
     KeyDown,
     KeyLeft,

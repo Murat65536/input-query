@@ -1,15 +1,26 @@
+//! Linux implementation using evdev for direct input device access.
+
 use evdev::{self, EventSummary};
 use std::io::ErrorKind;
 use crate::input_handler::KeyCode;
 
 const KEY_COUNT: usize = 0x300;
 
+/// Linux-specific input handler that reads from evdev devices.
+///
+/// This implementation enumerates all available input devices and monitors
+/// their key events. It requires read access to `/dev/input/event*` devices.
 pub struct InputHandler {
     devices: Vec<evdev::Device>,
     pressed_keys: [bool;KEY_COUNT],
 }
 
 impl InputHandler {
+    /// Creates a new input handler and enumerates all available input devices.
+    ///
+    /// # Panics
+    ///
+    /// Panics if setting non-blocking mode on any device fails.
     pub fn new() -> Self {
         let devices: Vec<_> = evdev::enumerate().map(|(_, device)| {
             device.set_nonblocking(true).expect("Failed to set non blocking on device");
@@ -21,6 +32,14 @@ impl InputHandler {
         }
     }
 
+    /// Updates the internal key state by fetching events from all devices.
+    ///
+    /// This method should be called regularly in your main loop to keep
+    /// the key state up to date.
+    ///
+    /// # Panics
+    ///
+    /// Panics if fetching events fails with an error other than `WouldBlock`.
     pub fn update_inputs(&mut self) {
         for device in &mut self.devices {
             match device.fetch_events() {
@@ -47,6 +66,15 @@ impl InputHandler {
         }
     }
 
+    /// Checks if a specific key is currently pressed.
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - The key code to check
+    ///
+    /// # Returns
+    ///
+    /// `true` if the key is currently pressed, `false` otherwise.
     pub fn is_pressed(&self, key: KeyCode) -> bool {
         let evdev_code = Self::to_evdev_code(key);
         self.pressed_keys[evdev_code as usize]

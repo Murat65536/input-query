@@ -1,9 +1,10 @@
 [package]
 name = "input_query"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "A library for querying key states without a window."
 license = "MIT"
+repository = "https://github.com/Murat65536/input-query"
 
 [dependencies]
 
