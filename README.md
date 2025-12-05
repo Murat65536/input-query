@@ -4,13 +4,6 @@ A cross-platform Rust library for querying keyboard key states without requiring
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
-
-- 🖥️ **Cross-platform**: Supports Linux, Windows, and macOS
-- 🚀 **No window required**: Query keyboard state directly from the OS
-- 🎯 **Simple API**: Easy-to-use interface with minimal boilerplate
-- 🔧 **Platform-optimized**: Uses native APIs for best performance on each platform
-
 ## Platform Support
 
 | Platform | API Used | Background Thread | Notes |
@@ -18,15 +11,6 @@ A cross-platform Rust library for querying keyboard key states without requiring
 | **Linux** | `evdev` | Yes (5ms poll rate) | Requires read access to `/dev/input/event*` devices |
 | **Windows** | `GetAsyncKeyState` (Win32) | No (on-demand) | No special permissions required |
 | **macOS** | `CGEventSourceKeyState` (Core Graphics) | No (on-demand) | Requires "Input Monitoring" permission |
-
-## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-input_query = "0.1.0"
-```
 
 ## Usage
 
@@ -54,31 +38,17 @@ fn main() {
 }
 ```
 
-**Note**: On Linux, input events are monitored in a background thread automatically. On Windows and macOS, the state is queried on-demand. You no longer need to call `update_inputs()` - the library handles updates automatically!
-
-### Example
-
-You can run the included example with:
-
-```bash
-cargo run --example simple
-```
-
-This will demonstrate real-time key detection. Press ESC to exit the example.
-
 ## Platform-Specific Setup
 
 ### Linux
 
-On Linux, you need read access to input devices. You can either:
+On Linux, you need read access to input devices.
 
-1. Add your user to the `input` group:
+Add your user to the `input` group:
    ```bash
    sudo usermod -a -G input $USER
    ```
    Then log out and log back in.
-
-2. Or run your application with appropriate permissions (not recommended for production).
 
 ### macOS
 
@@ -118,14 +88,3 @@ Or visit [docs.rs](https://docs.rs/input_query) (once published).
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Acknowledgments
-
-- Linux implementation uses the excellent [evdev](https://crates.io/crates/evdev) crate
-- Windows implementation uses the [windows](https://crates.io/crates/windows) crate
-- macOS implementation uses the [core-graphics](https://crates.io/crates/core-graphics) crate
-
