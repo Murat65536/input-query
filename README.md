@@ -1,4 +1,4 @@
-# input_query
+# Input Query
 
 A cross-platform Rust library for querying keyboard key states without requiring a window context.
 
