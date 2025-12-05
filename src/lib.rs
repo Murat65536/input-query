@@ -7,20 +7,21 @@
 //!
 //! ## Platform Support
 //!
-//! - **Linux**: Uses `evdev` to directly read input events from device files
-//! - **Windows**: Uses `GetAsyncKeyState` from the Win32 API
-//! - **macOS**: Uses `CGEventSourceKeyState` from the Core Graphics framework
+//! - **Linux**: Uses `evdev` to directly read input events from device files. Events are monitored
+//!   in a background thread that polls every 5ms.
+//! - **Windows**: Uses `GetAsyncKeyState` from the Win32 API. State is queried on-demand.
+//! - **macOS**: Uses `CGEventSourceKeyState` from the Core Graphics framework. State is queried on-demand.
 //!
 //! ## Usage
 //!
 //! ```no_run
 //! use input_query::{InputHandler, KeyCode};
+//! use std::thread;
+//! use std::time::Duration;
 //!
-//! let mut handler = InputHandler::new();
+//! let handler = InputHandler::new();
 //!
 //! loop {
-//!     handler.update_inputs();
-//!     
 //!     if handler.is_pressed(KeyCode::KeyEsc) {
 //!         println!("Escape key is pressed!");
 //!         break;
@@ -29,6 +30,8 @@
 //!     if handler.is_pressed(KeyCode::KeySpace) {
 //!         println!("Space bar is pressed!");
 //!     }
+//!     
+//!     thread::sleep(Duration::from_millis(10));
 //! }
 //! ```
 //!

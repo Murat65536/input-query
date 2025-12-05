@@ -13,11 +13,11 @@ A cross-platform Rust library for querying keyboard key states without requiring
 
 ## Platform Support
 
-| Platform | API Used | Notes |
-|----------|----------|-------|
-| **Linux** | `evdev` | Requires read access to `/dev/input/event*` devices |
-| **Windows** | `GetAsyncKeyState` (Win32) | No special permissions required |
-| **macOS** | `CGEventSourceKeyState` (Core Graphics) | Requires "Input Monitoring" permission |
+| Platform | API Used | Background Thread | Notes |
+|----------|----------|-------------------|-------|
+| **Linux** | `evdev` | Yes (5ms poll rate) | Requires read access to `/dev/input/event*` devices |
+| **Windows** | `GetAsyncKeyState` (Win32) | No (on-demand) | No special permissions required |
+| **macOS** | `CGEventSourceKeyState` (Core Graphics) | No (on-demand) | Requires "Input Monitoring" permission |
 
 ## Installation
 
@@ -32,13 +32,13 @@ input_query = "0.1.0"
 
 ```rust
 use input_query::{InputHandler, KeyCode};
+use std::thread;
+use std::time::Duration;
 
 fn main() {
-    let mut handler = InputHandler::new();
+    let handler = InputHandler::new();
 
     loop {
-        handler.update_inputs();
-        
         if handler.is_pressed(KeyCode::KeyEsc) {
             println!("Escape key is pressed!");
             break;
@@ -49,10 +49,22 @@ fn main() {
         }
         
         // Your application logic here
-        std::thread::sleep(std::time::Duration::from_millis(10));
+        thread::sleep(Duration::from_millis(10));
     }
 }
 ```
+
+**Note**: On Linux, input events are monitored in a background thread automatically. On Windows and macOS, the state is queried on-demand. You no longer need to call `update_inputs()` - the library handles updates automatically!
+
+### Example
+
+You can run the included example with:
+
+```bash
+cargo run --example simple
+```
+
+This will demonstrate real-time key detection. Press ESC to exit the example.
 
 ## Platform-Specific Setup
 

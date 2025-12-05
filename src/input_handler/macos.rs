@@ -7,7 +7,7 @@ use core_graphics::event_source::CGEventSource;
 /// macOS-specific input handler using CGEventSourceKeyState.
 ///
 /// This implementation queries the keyboard state on-demand using the Core Graphics
-/// framework, so it doesn't maintain any internal state that needs updating.
+/// framework, so it doesn't need a background thread. The state is always current when queried.
 ///
 /// # Permissions
 ///
@@ -19,15 +19,6 @@ impl InputHandler {
     /// Creates a new input handler.
     pub fn new() -> Self {
         InputHandler
-    }
-
-    /// Updates the internal key state.
-    ///
-    /// On macOS, this is a no-op since CGEventSourceKeyState queries the current
-    /// state directly each time `is_pressed` is called.
-    pub fn update_inputs(&mut self) {
-        // macOS uses CGEventSourceKeyState which queries state on demand
-        // No explicit update needed
     }
 
     /// Checks if a specific key is currently pressed.

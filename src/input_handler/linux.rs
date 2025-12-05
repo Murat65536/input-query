@@ -2,67 +2,83 @@
 
 use evdev::{self, EventSummary};
 use std::io::ErrorKind;
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
+use parking_lot::Mutex;
 use crate::input_handler::KeyCode;
 
 const KEY_COUNT: usize = 0x300;
 
+struct SharedState {
+    pressed_keys: [bool; KEY_COUNT],
+}
+
 /// Linux-specific input handler that reads from evdev devices.
 ///
 /// This implementation enumerates all available input devices and monitors
-/// their key events. It requires read access to `/dev/input/event*` devices.
+/// their key events in a background thread. It requires read access to 
+/// `/dev/input/event*` devices.
+///
+/// The background thread polls input devices every 5ms to keep the key state updated.
 pub struct InputHandler {
-    devices: Vec<evdev::Device>,
-    pressed_keys: [bool;KEY_COUNT],
+    state: Arc<Mutex<SharedState>>,
+    _thread_handle: Option<thread::JoinHandle<()>>,
 }
 
 impl InputHandler {
-    /// Creates a new input handler and enumerates all available input devices.
+    /// Creates a new input handler and starts a background thread to monitor input devices.
     ///
-    /// # Panics
-    ///
-    /// Panics if setting non-blocking mode on any device fails.
+    /// The background thread will automatically poll input devices every 5ms until
+    /// the `InputHandler` is dropped.
     pub fn new() -> Self {
         let devices: Vec<_> = evdev::enumerate().map(|(_, device)| {
             device.set_nonblocking(true).expect("Failed to set non blocking on device");
             device
         }).collect();
+
+        let state = Arc::new(Mutex::new(SharedState {
+            pressed_keys: [false; KEY_COUNT],
+        }));
+
+        let state_clone = Arc::clone(&state);
+        let thread_handle = thread::spawn(move || {
+            Self::input_thread(devices, state_clone);
+        });
+
         InputHandler {
-            devices: devices,
-            pressed_keys: [false;KEY_COUNT],
+            state,
+            _thread_handle: Some(thread_handle),
         }
     }
 
-    /// Updates the internal key state by fetching events from all devices.
-    ///
-    /// This method should be called regularly in your main loop to keep
-    /// the key state up to date.
-    ///
-    /// # Panics
-    ///
-    /// Panics if fetching events fails with an error other than `WouldBlock`.
-    pub fn update_inputs(&mut self) {
-        for device in &mut self.devices {
-            match device.fetch_events() {
-                Ok(events) => {
-                    for event in events {
-                        match event.destructure() {
-                            EventSummary::Key(_, key_type, 1) => {
-                                self.pressed_keys[key_type.code() as usize] = true;
+    fn input_thread(mut devices: Vec<evdev::Device>, state: Arc<Mutex<SharedState>>) {
+        loop {
+            let mut state_guard = state.lock();
+            for device in &mut devices {
+                match device.fetch_events() {
+                    Ok(events) => {
+                        for event in events {
+                            match event.destructure() {
+                                EventSummary::Key(_, key_type, 1) => {
+                                    state_guard.pressed_keys[key_type.code() as usize] = true;
+                                }
+                                EventSummary::Key(_, key_type, 0) => {
+                                    state_guard.pressed_keys[key_type.code() as usize] = false;
+                                },
+                                _ => {}
                             }
-                            EventSummary::Key(_, key_type, 0) => {
-                                self.pressed_keys[key_type.code() as usize] = false;
-                            },
-                            _ => {}
                         }
-                    }
-                    
-                },
-                Err(err) => {
-                    if err.kind() != ErrorKind::WouldBlock {
-                        panic!("{}", err);
+                    },
+                    Err(err) => {
+                        if err.kind() != ErrorKind::WouldBlock {
+                            eprintln!("Input device error: {}", err);
+                        }
                     }
                 }
             }
+            drop(state_guard);
+            thread::sleep(Duration::from_millis(5));
         }
     }
 
@@ -77,7 +93,8 @@ impl InputHandler {
     /// `true` if the key is currently pressed, `false` otherwise.
     pub fn is_pressed(&self, key: KeyCode) -> bool {
         let evdev_code = Self::to_evdev_code(key);
-        self.pressed_keys[evdev_code as usize]
+        let state = self.state.lock();
+        state.pressed_keys[evdev_code as usize]
     }
 
     fn to_evdev_code(key: KeyCode) -> u16 {
