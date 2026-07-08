@@ -3,36 +3,33 @@ use std::thread;
 use std::time::Duration;
 
 fn main() {
-    println!("Input Query Example");
-    println!("Press ESC to exit");
-    println!("---");
+    println!("Press esc to quit");
 
     let handler = InputHandler::new();
 
     loop {
         if handler.is_pressed(KeyCode::KeyEsc) {
-            println!("Escape key pressed! Exiting...");
             break;
         }
 
         if handler.is_pressed(KeyCode::KeySpace) {
-            println!("Space bar is pressed!");
+            println!("Space bar");
         }
 
         if handler.is_pressed(KeyCode::KeyW) {
-            println!("W key is pressed!");
+            println!("W key");
         }
 
         if handler.is_pressed(KeyCode::KeyA) {
-            println!("A key is pressed!");
+            println!("A key");
         }
 
         if handler.is_pressed(KeyCode::KeyS) {
-            println!("S key is pressed!");
+            println!("S key");
         }
 
         if handler.is_pressed(KeyCode::KeyD) {
-            println!("D key is pressed!");
+            println!("D key");
         }
 
         thread::sleep(Duration::from_millis(50));

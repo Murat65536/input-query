@@ -13,12 +13,12 @@ use core_graphics::event_source::CGEventSource;
 ///
 /// This requires "Input Monitoring" permission on macOS. You may need to grant
 /// this permission in System Preferences → Security & Privacy → Privacy → Input Monitoring.
-pub struct InputHandler;
+pub struct InputHandlerBackend;
 
-impl InputHandler {
-    /// Creates a new input handler.
+impl InputHandlerBackend {
+    /// Creates a new input handler backend.
     pub fn new() -> Self {
-        InputHandler
+        InputHandlerBackend
     }
 
     /// Checks if a specific key is currently pressed.
@@ -111,12 +111,26 @@ impl InputHandler {
             KeyCode::KeyF8 => 0x64,
             KeyCode::KeyF9 => 0x65,
             KeyCode::KeyF10 => 0x6D,
+            KeyCode::KeyNumLock => 0x47,
+            KeyCode::KeyScrollLock => 0x6B,
             KeyCode::KeyF11 => 0x67,
             KeyCode::KeyF12 => 0x6F,
+            KeyCode::KeyHome => 0x73,
             KeyCode::KeyUp => 0x7E,
-            KeyCode::KeyDown => 0x7D,
+            KeyCode::KeyPageUp => 0x74,
             KeyCode::KeyLeft => 0x7B,
             KeyCode::KeyRight => 0x7C,
+            KeyCode::KeyEnd => 0x77,
+            KeyCode::KeyDown => 0x7D,
+            KeyCode::KeyPageDown => 0x79,
+            KeyCode::KeyInsert => 0x72,
+            KeyCode::KeyDelete => 0x75,
+            KeyCode::KeyMute => 0x4A,
+            KeyCode::KeyVolumeDown => 0x49,
+            KeyCode::KeyVolumeUp => 0x48,
+            KeyCode::KeyLeftmeta => 0x37,
+            KeyCode::KeyRightmeta => 0x36,
+            _ => 0xFFFF,
         }
     }
 }

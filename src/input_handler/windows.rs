@@ -3,16 +3,13 @@
 use crate::input_handler::KeyCode;
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VIRTUAL_KEY};
 
-/// Windows-specific input handler using GetAsyncKeyState.
-///
-/// This implementation queries the keyboard state on-demand using the Win32 API,
-/// so it doesn't need a background thread. The state is always current when queried.
-pub struct InputHandler;
+/// Windows-specific input handler backend
+pub struct InputHandlerBackend;
 
-impl InputHandler {
-    /// Creates a new input handler.
+impl InputHandlerBackend {
+    /// Creates a new input handler backend.
     pub fn new() -> Self {
-        InputHandler
+        InputHandlerBackend
     }
 
     /// Checks if a specific key is currently pressed.
@@ -101,12 +98,33 @@ impl InputHandler {
             KeyCode::KeyF8 => 0x77,
             KeyCode::KeyF9 => 0x78,
             KeyCode::KeyF10 => 0x79,
+            KeyCode::KeyNumLock => 0x90,
+            KeyCode::KeyScrollLock => 0x91,
             KeyCode::KeyF11 => 0x7A,
             KeyCode::KeyF12 => 0x7B,
+            KeyCode::KeySysRq => 0x2C,
+            KeyCode::KeyHome => 0x24,
             KeyCode::KeyUp => 0x26,
-            KeyCode::KeyDown => 0x28,
+            KeyCode::KeyPageUp => 0x21,
             KeyCode::KeyLeft => 0x25,
             KeyCode::KeyRight => 0x27,
+            KeyCode::KeyEnd => 0x23,
+            KeyCode::KeyDown => 0x28,
+            KeyCode::KeyPageDown => 0x22,
+            KeyCode::KeyInsert => 0x2D,
+            KeyCode::KeyDelete => 0x2E,
+            KeyCode::KeyMute => 0xAD,
+            KeyCode::KeyVolumeDown => 0xAE,
+            KeyCode::KeyVolumeUp => 0xAF,
+            KeyCode::KeyPause => 0x13,
+            KeyCode::KeyLeftmeta => 0x5B,
+            KeyCode::KeyRightmeta => 0x5C,
+            KeyCode::KeyNextsong => 0xB0,
+            KeyCode::KeyPlayPause => 0xCD,
+            KeyCode::KeyPrevioussong => 0xB1,
+            KeyCode::KeyStopcd => 0xB2,
+            KeyCode::KeyPrint => 0x2C,
+            _ => 0,
         })
     }
 }

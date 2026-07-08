@@ -2,16 +2,6 @@
 //!
 //! A cross-platform Rust library for querying keyboard key states without requiring a window context.
 //!
-//! This library provides a simple, unified API for checking if keyboard keys are currently pressed
-//! across Linux, Windows, and macOS platforms.
-//!
-//! ## Platform Support
-//!
-//! - **Linux**: Uses `evdev` to directly read input events from device files. Events are monitored
-//!   in a background thread that polls every 5ms.
-//! - **Windows**: Uses `GetAsyncKeyState` from the Win32 API. State is queried on-demand.
-//! - **macOS**: Uses `CGEventSourceKeyState` from the Core Graphics framework. State is queried on-demand.
-//!
 //! ## Usage
 //!
 //! ```no_run
